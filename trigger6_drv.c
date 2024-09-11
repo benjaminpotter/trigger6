@@ -21,7 +21,9 @@
 
 #include "trigger6.h"
 
-#include "img.h"
+#include <linux/vmalloc.h>
+
+//#include "img.h"
 
 static int trigger6_usb_suspend(struct usb_interface *interface,
 				pm_message_t message)
@@ -179,9 +181,11 @@ static void trigger6_pipe_update(struct drm_simple_display_pipe *pipe,
 			drm_warn(&trigger6->drm, "fb CPU access failed: %d",
 				 ret);
 		}
+		struct drm_format_conv_state drm_state;
+		drm_format_conv_state_init(&drm_state);
 		drm_fb_xrgb8888_to_rgb888(&map, NULL,
 					  &shadow_plane_state->data[0],
-					  state->fb, &current_rect);
+					  state->fb, &current_rect, &drm_state);
 		drm_gem_fb_end_cpu_access(state->fb, DMA_FROM_DEVICE);
 
 		size_t blocks =
